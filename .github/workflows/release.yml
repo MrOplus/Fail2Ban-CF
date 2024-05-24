@@ -1,11 +1,13 @@
 name: release
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - master
 
 jobs:
   generate:
+    permissions: write-all
     name: Generate cross-platform builds
     runs-on: ubuntu-latest
     steps:
@@ -16,13 +18,10 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.21
-          
-      - name: Print go tool dist list
-        run: go tool dist list
 
       - name: Build
         run: |
-          platforms=("linux/amd64" "darwin/amd64" "windows/amd64")
+          platforms=("linux/amd64" "windows/amd64")
           for x in "${platforms[@]}"; do
             os=${x%%/*}
             arch=${x##*/}
