@@ -1,9 +1,8 @@
 name: release
-
 on:
-  push:
-    branches:
-      - master
+  release:
+    types:
+      - created
 
 jobs:
   generate:
@@ -12,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         
       - name: Setup go
         uses: actions/setup-go@v2
@@ -31,12 +30,8 @@ jobs:
             fi
             GOOS=$os GOARCH=$arch CGO_ENABLED=0 go build -o dist/$filename
           done
-      - name: Create a Release
-        id: create_release
-        uses: shogo82148/actions-create-release@v1
 
-      - name: Upload Assets
-        uses: shogo82148/actions-upload-release-asset@v1
+      - uses: shogo82148/actions-upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ github.event.release.upload_url }}
           asset_path: dist/*
